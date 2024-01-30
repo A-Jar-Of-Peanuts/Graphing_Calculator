@@ -26,6 +26,20 @@
     z-index:100;
 }
 
+.format {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding-inline: 50px;
+    gap:1%;
+    background-color:#F9F7C9;
+    top:0;
+    left:0;
+    width:100%;
+    z-index:100;
+}
+
 body {
     background-color: lightblue;
 }
