@@ -46,14 +46,13 @@ function graph(eq) {
     var py = 0;
     var x = 0;
     var y = 0;
-    var scale = 50;
+    var scale = 10;
     var pdev = 0;
     var curdev = 0;
     ctx.moveTo(0,0);
     for (var i = -width/2; i<=width/2; i+=.001) {
         x = i;
         y = parse(eq.value, i);
-        
         nextX = i+=0.01;
         nextY = parse(eq.value, nextX);
 
@@ -93,10 +92,10 @@ function parse(eq, val) {
     str = str.replace('cos', '1c');
     str = str.replace('tan', '1t');
     str = str.replace(/ /g,'')
-    var l = compute(str, val, -10);
+    var l = compute(str, val, 10);
 
     try {
-        return l;
+        return l[0];
     } catch (e) {
         return NaN;
     }
@@ -127,16 +126,10 @@ function atomCalc(eq, val, lhs) {
         }
         lhs = parseFloat(atom);
     } else if (eq.charAt(0) == '(') {
-        var atom = "";
         eq = eq.substring(1);
-        cur = eq.charAt(0);
-        while(cur!=')') {
-            atom += cur;
-            eq = eq.substring(1);
-            cur = eq.charAt(0);
-        }
-        eq = eq.substring(1);
-        lhs = compute(atom, val, -10);
+        var result = compute(eq, val, 10);
+        eq = result[1].substring(1);
+        lhs = result[0];
     
     } else if (eq.charAt(0) == 'e'){
         lhs = Math.E;
@@ -151,24 +144,29 @@ function compute(eq, val, min_prec) {
     var ans = atomCalc(eq, val, 0);
     var lhs = ans[0];
     eq = ans[1];
+    var rhs = 0;
 
-    if (eq.length) {
-        for (var i = 0; i<eq.length; i++) {
-            var cur = eq.charAt(i);
-            if (cur != '+' && cur != '-' && cur != '*' && cur != '/' && cur != '^' && cur != 's'
-            && cur != 'c' && cur != 't') {
-                break;
-            }
-            if (pemdas.get(cur) < min_prec) {
-                break;
-            }
-            
-            next_min_prec = pemdas.get(cur);
-            var rhs = compute(eq.substring(1), val, next_min_prec);
-            lhs = singleOp(lhs, rhs, cur);
+    while(eq.length) {
+        var cur = eq.charAt(0);
+
+        if (cur != '+' && cur != '-' && cur != '*' && cur != '/' && cur != '^' && cur != 's'
+        && cur != 'c' && cur != 't') {
+            break;
         }
+
+        if (pemdas.get(cur) > min_prec) {
+            break;
+        }
+
+        next_min_prec = pemdas.get(cur);
+
+        var result = compute(eq.substring(1), val, next_min_prec);
+        rhs = result[0];
+        eq = result[1];
+        lhs = singleOp(lhs, rhs, cur);
     }
-    return lhs;
+
+    return [lhs, eq];
 }
 
 function singleOp(lhs, rhs, op) {
