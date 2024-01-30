@@ -37,9 +37,9 @@ function convertY(y) {
 function submit() {
     var x = document.getElementById("eq");
     graph(eq);
-    //onsole.log(x.value);
 }
 
+// graph function
 function graph(eq) {
     clear();
     var x = 0;
@@ -79,6 +79,9 @@ function graph(eq) {
 
 const pemdas = new Map();
 
+pemdas.set('t', -2);
+pemdas.set('c', -1);
+pemdas.set('s', 0);
 pemdas.set('(', 1);
 pemdas.set(')', 2);
 pemdas.set('^', 3);
@@ -87,10 +90,14 @@ pemdas.set('/', 5);
 pemdas.set('+', 6);
 pemdas.set('-', 7);
 
+// parse equation
 function parse(eq, val) {
     var str = eq.value;
-    var str = str.replace("sin", "s");
-    var l = compute(eq.value, val, -10);
+    str = str.replace('sin', '1s');
+    str = str.replace('cos', '1c');
+    str = str.replace('tan', '1t');
+    console.log(str);
+    var l = compute(str, val, -10);
 
     try {
         return l;
@@ -99,14 +106,30 @@ function parse(eq, val) {
     }
 }
 
-function compute(eq, val, min_prec) {
-    var lhs = 0;
+function atomCalc(eq, val, lhs) {  
+    if (!eq.length) {
+        return [lhs, eq];
+    }
+
+    cur = eq.charAt(0);  
+    if (!(cur != '+' && cur != '-' && cur != '*' && cur != '/' && cur != '^' && cur != 's'
+    && cur != 'c' && cur != 't')) {
+        return [lhs, eq];
+    }
+
     if (eq.charAt(0) == 'x') {
         lhs = parseInt(val);
         eq = eq.substring(1);
     } else if (!isNaN(eq.charAt(0))) {
-        lhs = parseInt(eq.charAt(0));
-        eq = eq.substring(1);
+        var atom = "";
+        cur = eq.charAt(0);
+        while(!isNaN(eq.charAt(0)) && eq.length) {
+            atom += cur;
+            eq = eq.substring(1);
+            cur = eq.charAt(0);
+        }
+        console.log(atom);
+        lhs = parseInt(atom);
     } else if (eq.charAt(0) == '(') {
         var atom = "";
         eq = eq.substring(1);
@@ -124,15 +147,22 @@ function compute(eq, val, min_prec) {
         lhs = Math.E;
         console.log(lhs);
         eq = eq.substring(1);
-    } else if (eq.charAt(0) == 's') {
-        eq = eq.substring(1);
-        lhs = Math.sin()
-    }
+    } 
+
+    atomCalc(eq, val, lhs);
+    return [lhs, eq];
+}
+
+function compute(eq, val, min_prec) {
+    var ans = atomCalc(eq, val, 0);
+    var lhs = ans[0];
+    eq = ans[1];
 
     if (eq.length) {
         for (var i = 0; i<eq.length; i++) {
             var cur = eq.charAt(i);
-            if (cur != '+' && cur != '-' && cur != '*' && cur != '/' && cur != '^' && cur != 's') {
+            if (cur != '+' && cur != '-' && cur != '*' && cur != '/' && cur != '^' && cur != 's'
+            && cur != 'c' && cur != 't') {
                 break;
             }
             if (pemdas.get(cur) < min_prec) {
@@ -162,7 +192,17 @@ function singleOp(lhs, rhs, op) {
             return parseInt(lhs) / parseInt(rhs);
             break;
         case '^':
+            console.log(rhs);
             return Math.pow(lhs, rhs);
+            break;
+        case 's':
+            return Math.sin(rhs);
+            break;
+        case 'c':
+            return Math.cos(rhs);
+            break;
+        case 't':
+            return Math.tan(rhs);
             break;
     }
 }
