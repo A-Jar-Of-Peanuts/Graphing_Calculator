@@ -1,44 +1,59 @@
-// var c = document.getElementById("3d");
-// var webgl = c.getContext('webgl')
+import * as THREE from 'three';
 
-// c.width = width;
-// c.height = height;
+var width = 500;
+var height = 500;
 
-// var ctx = c.getContext("2d");
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
-// function initWebGL(webgl, vortexes) {
-//     var vertexBuffer = webgl.createBuffer();
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize( width, height );
+document.getElementById("three").insertBefore(renderer.domElement, document.getElementById("three").children[1]);
 
-//     webgl.bindBuffer(webgl.ARRAY_BUFFER, vertexBuffer);
+//camera.up.set(0,0,1);
+camera.position.z = 100;
+camera.position.x = 100;
+ camera.position.y = 20;
+camera.rotation.z += THREE.MathUtils.degToRad(0);
+camera.rotation.y += THREE.MathUtils.degToRad(20);
+camera.rotation.x += THREE.MathUtils.degToRad(10);
 
-//     webgl.bufferData(
-//         webgl.ARRAY_BUFFER,
-//         new Float32Array(vortexes),
-//         webgl.STATIC_DRAW
-//     );
 
-//     webgl.clearColor(0, 0.5, 0.5, 0.9);
+const vertices = [];
 
-//     webgl.clear(webgl.COLOR_BUFFER_BIT);
-// }
+for ( var i = -20; i<=10; i+=.1) {
+	
+    for (var j = -10; j<= 10; j+=.1) {
+        var x = i;
+        var y = j;
+        var z = x*x;
+        //var z = y*y;
+        vertices.push( x, y, z );
+    }
+}
 
-// function drawArrays(webgl) {
-//     webgl.drawArrays(webgl.TRIANGLES, 0, 3);
-// }
+const geometry = new THREE.BufferGeometry();
+geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+const material = new THREE.PointsMaterial( { color: 0x888888 } );
+const points = new THREE.Points( geometry, material );
+scene.add( points );
 
-// var vortexes = [
-//     0.8, 0.0,
-//     0.0, 1,
-//     1, 0.8
-// ];
- 
-// initWebGL(webgl, vortexes);
- 
-// // var vertexShader = createVertexShader();
-// // var fragmentShader = createFragmentShader();
+function axes() {
 
-// // var shaderProgram = createShaderProgram(webgl, vertexShader, fragmentShader);
+    const axesHelper = new THREE.AxesHelper( 50 );
+    scene.add( axesHelper );
+}
 
-// // transformCoordinatesAndSet(webgl, shaderProgram);
+function animate() {
+	requestAnimationFrame( animate );
 
-// drawArrays(webgl);
+    camera.rotation.x += .004;
+    camera.rotation.y += .004;
+    camera.rotation.z += .004;
+
+	renderer.render( scene, camera );
+}
+
+axes();
+renderer.render( scene, camera );
+//animate()

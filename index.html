@@ -1,18 +1,24 @@
 <html>
     <head>
+        <link rel="stylesheet" href="./graph.css">
     </head>
     <body>
-        <div style = "background-color:white; transform: scale(1);">
+
+        <div class = "two">
+            <h>2D GRAPHING CALCULATOR</h>
             <canvas id="myCanvas" width = "200" height = "200"></canvas>
-         </div>
-         <input type="text" id="eq" name="eq" size="10" />
-         <button onclick="submit()">Graph</button>
+            <input type="text" id="eq" name="eq" size="10" />
+            <button onclick="submit()">Graph</button>
+        </div>
 
+        <div id = "three" class = "three">
+            <h>3D GRAPHING CALCULATOR</h>
+            <input type="text" id="eq3D" name="eq3D" size="10" />
+            <button onclick="submit3D()">Graph</button>
+        </div>
 
-         <div style = "background-color:white; transform: scale(1);">
-            <canvas id="3d" width = "200" height = "200"></canvas>
-         </div>
-
+        <script src="./graphing.js"></script>
+        <script type = "module" src="./graphing3D.js"></script>
     </body>
-    <script src="./graphing.js"></script>
+
 </html>
