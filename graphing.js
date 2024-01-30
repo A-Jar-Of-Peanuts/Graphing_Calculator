@@ -94,39 +94,52 @@ function parse(eq, val) {
     // } catch (e) {
     //     return NaN;
     // }
-    console.log("val: " + val);
     var l = compute(eq.value, val, -10);
-    console.log("y: " + l);
-    return l;
 
+    try {
+        return l;
+    } catch (e) {
+        return NaN;
+    }
 }
 
 function compute(eq, val, min_prec) {
     var lhs = 0;
     if (eq.charAt(0) == 'x') {
         lhs = parseInt(val);
+        eq = eq.substring(1);
     } else if (!isNaN(eq.charAt(0))) {
         lhs = parseInt(eq.charAt(0));
+        eq = eq.substring(1);
     } else if (eq.charAt(0) == '(') {
-
+        var atom = "";
+        eq = eq.substring(1);
+        cur = eq.charAt(0);
+        while(cur!=')') {
+            atom += cur;
+            eq = eq.substring(1);
+            cur = eq.charAt(0);
+        }
+        eq = eq.substring(1);
+        lhs = compute(atom, val, -10);
+        console.log(lhs);
+    
     } else {
         
     }
 
-    eq = eq.substring(1);
-
     if (eq.length) {
         for (var i = 0; i<eq.length; i++) {
             var cur = eq.charAt(i);
-            if (cur != '+' && cur != '-' && cur != '*' && cur != '/') {
+            if (cur != '+' && cur != '-' && cur != '*' && cur != '/' && cur != '^') {
                 break;
             }
             if (pemdas.get(cur) < min_prec) {
                 break;
             }
             
-            next_min_prec = pemdas.get(cur) + 1;
-            var rhs = compute(eq.substring(1), next_min_prec);
+            next_min_prec = pemdas.get(cur);
+            var rhs = compute(eq.substring(1), val, next_min_prec);
             lhs = singleOp(lhs, rhs, cur);
         }
     }
@@ -147,5 +160,7 @@ function singleOp(lhs, rhs, op) {
         case '/':
             return parseInt(lhs) / parseInt(rhs);
             break;
+        case '^':
+            return Math.pow(lhs, rhs);
     }
 }
