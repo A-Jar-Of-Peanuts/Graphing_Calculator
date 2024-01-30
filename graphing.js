@@ -42,22 +42,23 @@ function submit() {
 // graph function
 function graph(eq) {
     clear();
+    var px = 0;
+    var py = 0;
     var x = 0;
     var y = 0;
-    var scale = 70;
+    var scale = 50;
     var pdev = 0;
     var curdev = 0;
     ctx.moveTo(0,0);
-    for (var i = -width/2; i<=width/2; i+=.1) {
+    for (var i = -width/2; i<=width/2; i+=.001) {
         x = i;
         y = parse(eq.value, i);
         
-        nextX = i+=0.1;
+        nextX = i+=0.001;
         nextY = parse(eq.value, nextX);
 
         curdev = (nextY - y)/(nextX- x);
-        //console.log(x + " " + y);
-        if (pdev * curdev >= 0) {
+        if (Math.abs((py + pdev)-y)<30) {
             if (y <= height/2) {
                 ctx.lineTo(convertX(scale*x), convertY(scale*y));
             }
@@ -65,9 +66,10 @@ function graph(eq) {
             ctx.moveTo(convertX(scale*(x+.1)), convertY(scale*(parse(eq.value, x+.1))));
         }
         pdev = curdev;
+        px = x;
+        py = y;
     }
     ctx.stroke();
-    console.log(parse('.1+2', 1));
 }
 
 const pemdas = new Map();
@@ -89,7 +91,6 @@ function parse(eq, val) {
     str = str.replace('sin', '1s');
     str = str.replace('cos', '1c');
     str = str.replace('tan', '1t');
-    console.log(str);
     var l = compute(str, val, -10);
 
     try {
@@ -122,7 +123,6 @@ function atomCalc(eq, val, lhs) {
             eq = eq.substring(1);
             cur = eq.charAt(0);
         }
-        console.log(atom);
         lhs = parseFloat(atom);
     } else if (eq.charAt(0) == '(') {
         var atom = "";
@@ -135,11 +135,9 @@ function atomCalc(eq, val, lhs) {
         }
         eq = eq.substring(1);
         lhs = compute(atom, val, -10);
-        console.log(lhs);
     
     } else if (eq.charAt(0) == 'e'){
         lhs = Math.E;
-        console.log(lhs);
         eq = eq.substring(1);
     } 
 
@@ -186,7 +184,6 @@ function singleOp(lhs, rhs, op) {
             return parseFloat(lhs) / parseFloat(rhs);
             break;
         case '^':
-            console.log(rhs);
             return Math.pow(lhs, rhs);
             break;
         case 's':
