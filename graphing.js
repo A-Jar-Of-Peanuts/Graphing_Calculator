@@ -44,35 +44,27 @@ function graph(eq) {
     clear();
     var x = 0;
     var y = 0;
-    var scale = 5;
+    var scale = 70;
+    var pdev = 0;
+    var curdev = 0;
     ctx.moveTo(0,0);
     for (var i = -width/2; i<=width/2; i+=.1) {
         x = i;
         y = parse(eq.value, i);
-        if (isNaN(y) || !isFinite(y)) {
-            console.log("NAN");
-            for(var j = i-1; j <= i-0.01; j+=.1) {
-                var temp = parse(eq.value, j)
-                ctx.lineTo(convertX(scale*j), convertY(scale*temp));
-                if (convertY(scale*temp) > height) {
-                    break;
-                }
-            }
-            ctx.moveTo(convertX(scale*i+0.01), convertY(scale*parse(eq.value, i+0.01)))
-            for(var j = i+0.01; j <= i+1; j+=0.01) {
-                var temp = parse(eq.value, j)
-                ctx.lineTo(convertX(scale*j), convertY(scale*temp));
-                if (convertY(scale*temp) > height) {
-                    break;
-                }
-            }
-            x = i+1;
-            y = parse(eq.value, i+1);
-        }
+        
+        nextX = i+=0.1;
+        nextY = parse(eq.value, nextX);
+
+        curdev = (nextY - y)/(nextX- x);
         //console.log(x + " " + y);
-        if (y <= height/2) {
-            ctx.lineTo(convertX(scale*x), convertY(scale*y));
+        if (pdev * curdev >= 0) {
+            if (y <= height/2) {
+                ctx.lineTo(convertX(scale*x), convertY(scale*y));
+            }
+        } else {
+            ctx.moveTo(convertX(scale*(x+.1)), convertY(scale*(parse(eq.value, x+.1))));
         }
+        pdev = curdev;
     }
     ctx.stroke();
     console.log(parse('.1+2', 1));
