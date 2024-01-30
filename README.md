@@ -12,6 +12,8 @@ addition: +
 \
 subtraction: -
 \
+natural log: ln
+\
 sine: sin
 \
 cosine: cos
@@ -19,6 +21,8 @@ cosine: cos
 tangent: tan
 \
 euler's number: e
+\
+pi: pi
 \
 \
 note: follows PEMDAS operation order
