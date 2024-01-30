@@ -46,9 +46,29 @@ function graph(eq) {
     var y = 0;
     var scale = 5;
     ctx.moveTo(0,0);
-    for (var i = -width/2; i<=width/2; i++) {
+    for (var i = -width/2; i<=width/2; i+=1) {
         x = i;
         y = parse(eq, i);
+        if (isNaN(y) || !isFinite(y)) {
+            console.log("NAN");
+            for(var j = i-1; j <= i-0.01; j+=0.01) {
+                var temp = parse(eq, j)
+                ctx.lineTo(convertX(scale*j), convertY(scale*temp));
+                if (convertY(scale*temp) > height) {
+                    break;
+                }
+            }
+            ctx.moveTo(convertX(scale*i+0.01), convertY(scale*parse(eq, i+0.01)))
+            for(var j = i+0.01; j <= i+1; j+=0.01) {
+                var temp = parse(eq, j)
+                ctx.lineTo(convertX(scale*j), convertY(scale*temp));
+                if (convertY(scale*temp) > height) {
+                    break;
+                }
+            }
+            x = i+1;
+            y = parse(eq, i+1);
+        }
         //console.log(x + " " + y);
         if (y <= height/2) {
             ctx.lineTo(convertX(scale*x), convertY(scale*y));
@@ -57,51 +77,75 @@ function graph(eq) {
     ctx.stroke();
 }
 
+const pemdas = new Map();
+
+pemdas.set('(', 1);
+pemdas.set(')', 2);
+pemdas.set('^', 3);
+pemdas.set('*', 4);
+pemdas.set('/', 5);
+pemdas.set('+', 6);
+pemdas.set('-', 7);
+
 function parse(eq, val) {
-    total = 0;
-    prev = '';
-    for (let i = 0; i < eq.value.length; i++) {
-        var cur = eq.value.charAt(i);
-        if (cur == 'x') {
-            switch(prev) {
-                case '':
-                    total = val;
-                    break;
-                case '+':
-                    total += parseInt(val);
-                    break;
-                case '-':
-                    total -= val;
-                    break;
-                case '/':
-                    total /= val;
-                    break;
-                    case '*':
-                        total *= val;
-                        break;
+    // var x = val;
+    // try {
+    //     return eval(eq.value);
+    // } catch (e) {
+    //     return NaN;
+    // }
+    console.log("val: " + val);
+    var l = compute(eq.value, val, -10);
+    console.log("y: " + l);
+    return l;
+
+}
+
+function compute(eq, val, min_prec) {
+    var lhs = 0;
+    if (eq.charAt(0) == 'x') {
+        lhs = parseInt(val);
+    } else if (!isNaN(eq.charAt(0))) {
+        lhs = parseInt(eq.charAt(0));
+    } else if (eq.charAt(0) == '(') {
+
+    } else {
+        
+    }
+
+    eq = eq.substring(1);
+
+    if (eq.length) {
+        for (var i = 0; i<eq.length; i++) {
+            var cur = eq.charAt(i);
+            if (cur != '+' && cur != '-' && cur != '*' && cur != '/') {
+                break;
             }
-        } else if (!isNaN(cur)) {
-            switch(prev) {
-                case '':
-                    total = cur;
-                    break;
-                case '+':
-                    total += parseInt(cur);
-                    break;
-                case '-':
-                    total -= cur;
-                    break;
-                case '/':
-                    total /= cur;
-                    break;
-                    case '*':
-                        total *= cur;
-                        break;
+            if (pemdas.get(cur) < min_prec) {
+                break;
             }
-        } else {
-            prev = cur;
+            
+            next_min_prec = pemdas.get(cur) + 1;
+            var rhs = compute(eq.substring(1), next_min_prec);
+            lhs = singleOp(lhs, rhs, cur);
         }
     }
-    console.log(val + " " + total);
-    return total;
+    return lhs;
+}
+
+function singleOp(lhs, rhs, op) {
+    switch(op) {
+        case '+':
+            return parseInt(lhs) + parseInt(rhs);
+            break;
+        case '-':
+            return parseInt(lhs) - parseInt(rhs);
+            break;
+        case '*':
+            return parseInt(lhs) * parseInt(rhs);
+            break;
+        case '/':
+            return parseInt(lhs) / parseInt(rhs);
+            break;
+    }
 }
