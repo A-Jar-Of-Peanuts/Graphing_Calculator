@@ -70,9 +70,9 @@ function graph(eq) {
     clear();
     var vertices = [];
 
-    for ( var i = -50; i<=50; i+=.1) {
+    for ( var i = -10; i<=10; i+=.05) {
         
-        for (var j = -50; j<= 50; j+=.1) {
+        for (var j = -10; j<= 10; j+=.05) {
             var x = i;
             var y = j;
             var z = parse(eq.value, x, y);
