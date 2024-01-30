@@ -88,12 +88,8 @@ pemdas.set('+', 6);
 pemdas.set('-', 7);
 
 function parse(eq, val) {
-    // var x = val;
-    // try {
-    //     return eval(eq.value);
-    // } catch (e) {
-    //     return NaN;
-    // }
+    var str = eq.value;
+    var str = str.replace("sin", "s");
     var l = compute(eq.value, val, -10);
 
     try {
@@ -124,14 +120,19 @@ function compute(eq, val, min_prec) {
         lhs = compute(atom, val, -10);
         console.log(lhs);
     
-    } else {
-        
+    } else if (eq.charAt(0) == 'e'){
+        lhs = Math.E;
+        console.log(lhs);
+        eq = eq.substring(1);
+    } else if (eq.charAt(0) == 's') {
+        eq = eq.substring(1);
+        lhs = Math.sin()
     }
 
     if (eq.length) {
         for (var i = 0; i<eq.length; i++) {
             var cur = eq.charAt(i);
-            if (cur != '+' && cur != '-' && cur != '*' && cur != '/' && cur != '^') {
+            if (cur != '+' && cur != '-' && cur != '*' && cur != '/' && cur != '^' && cur != 's') {
                 break;
             }
             if (pemdas.get(cur) < min_prec) {
@@ -162,5 +163,6 @@ function singleOp(lhs, rhs, op) {
             break;
         case '^':
             return Math.pow(lhs, rhs);
+            break;
     }
 }
