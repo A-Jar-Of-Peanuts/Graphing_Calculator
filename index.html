@@ -7,18 +7,18 @@
         <div class = "two">
             <h>2D GRAPHING CALCULATOR</h>
             <canvas id="myCanvas" width = "200" height = "200"></canvas>
-            <input type="text" id="eq" name="eq" size="10" />
+            <input type="text" id="eq" name="eq" size="30" />
             <button onclick="submit()">Graph</button>
         </div>
 
         <div id = "three" class = "three">
             <h>3D GRAPHING CALCULATOR</h>
             <input type="text" id="eq3D" name="eq3D" size="10" />
-            <button onclick="submit3D()">Graph</button>
+            <button id = "sub3D">Graph</button>
         </div>
 
-        <script src="./graphing.js"></script>
-        <script type = "module" src="./graphing3D.js"></script>
     </body>
+    <script type = "module" src="./graphing3D.js"></script>
+    <script src="./graphing.js"></script>
 
 </html>

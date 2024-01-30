@@ -8,6 +8,7 @@ c.height = height;
 
 var ctx = c.getContext("2d");
 
+
 // axes
 ctx.beginPath();
 ctx.moveTo(0, height/2);
@@ -92,6 +93,8 @@ function parse(eq, val) {
     str = str.replaceAll('sin', '1s');
     str = str.replaceAll('cos', '1c');
     str = str.replaceAll('tan', '1t');
+    str = str.replaceAll('ln', '1l');
+    str = str.replaceAll('pi', 'p');
     var l = compute(str, val, 10);
 
     try {
@@ -109,7 +112,7 @@ function atomCalc(eq, val, lhs) {
 
     cur = eq.charAt(0);  
     if (!(cur != '+' && cur != '-' && cur != '*' && cur != '/' && cur != '^' && cur != 's'
-    && cur != 'c' && cur != 't')) {
+    && cur != 'c' && cur != 't' && cur != 'l')) {
         return [lhs, eq];
     }
 
@@ -134,7 +137,10 @@ function atomCalc(eq, val, lhs) {
     } else if (eq.charAt(0) == 'e'){
         lhs = Math.E;
         eq = eq.substring(1);
-    } 
+    }  else if (eq.charAt(0) == 'p') {
+        lhs = Math.PI;
+        eq = eq.substring(1);
+    }
 
     //atomCalc(eq, val, lhs);
     return [lhs, eq];
@@ -150,7 +156,7 @@ function compute(eq, val, min_prec) {
         var cur = eq.charAt(0);
 
         if (cur != '+' && cur != '-' && cur != '*' && cur != '/' && cur != '^' && cur != 's'
-        && cur != 'c' && cur != 't') {
+        && cur != 'c' && cur != 't' && cur != 'l') {
             break;
         }
 
@@ -194,6 +200,9 @@ function singleOp(lhs, rhs, op) {
             break;
         case 't':
             return Math.tan(rhs);
+            break;
+        case 'l':
+            return Math.log(rhs);
             break;
     }
 }
