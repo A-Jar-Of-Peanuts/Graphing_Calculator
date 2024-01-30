@@ -46,7 +46,7 @@ function graph(eq) {
     var py = 0;
     var x = 0;
     var y = 0;
-    var scale = 10;
+    var scale = 50;
     var pdev = 0;
     var curdev = 0;
     ctx.moveTo(0,0);
@@ -54,11 +54,11 @@ function graph(eq) {
         x = i;
         y = parse(eq.value, i);
         
-        nextX = i+=0.001;
+        nextX = i+=0.01;
         nextY = parse(eq.value, nextX);
 
         curdev = (nextY - y)/(nextX- x);
-        if (Math.abs((py + pdev)-y)<50) {
+        if (pdev * curdev >= 0) {
             if (y <= height/2) {
                 ctx.lineTo(convertX(scale*x), convertY(scale*y));
             }
