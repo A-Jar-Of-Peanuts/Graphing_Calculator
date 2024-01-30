@@ -26,4 +26,5 @@ pi: pi
 \
 \
 note: follows PEMDAS operation order
+\
 to run: npx vite
