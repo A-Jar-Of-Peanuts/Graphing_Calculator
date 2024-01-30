@@ -46,7 +46,7 @@ function graph(eq) {
     var py = 0;
     var x = 0;
     var y = 0;
-    var scale = 50;
+    var scale = 10;
     var pdev = 0;
     var curdev = 0;
     ctx.moveTo(0,0);
@@ -58,7 +58,7 @@ function graph(eq) {
         nextY = parse(eq.value, nextX);
 
         curdev = (nextY - y)/(nextX- x);
-        if (Math.abs((py + pdev)-y)<30) {
+        if (Math.abs((py + pdev)-y)<50) {
             if (y <= height/2) {
                 ctx.lineTo(convertX(scale*x), convertY(scale*y));
             }
@@ -74,6 +74,7 @@ function graph(eq) {
 
 const pemdas = new Map();
 
+pemdas.set('l', -3);
 pemdas.set('t', -2);
 pemdas.set('c', -1);
 pemdas.set('s', 0);
@@ -91,6 +92,7 @@ function parse(eq, val) {
     str = str.replace('sin', '1s');
     str = str.replace('cos', '1c');
     str = str.replace('tan', '1t');
+    str = str.replace(/ /g,'')
     var l = compute(str, val, -10);
 
     try {
