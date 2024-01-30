@@ -34,12 +34,12 @@ scene.add(camera);
 
 const vertices = [];
 
-for ( var i = -20; i<=10; i+=.05) {
+for ( var i = -50; i<=50; i+=.8) {
 	
-    for (var j = -10; j<= 10; j+=.05) {
+    for (var j = -50; j<= 50; j+=.8) {
         var x = i;
         var y = j;
-        var z = y*y+x*x;
+        var z = Math.pow((x*x-y*y), .5);
         //var z = y*y;
         vertices.push( x, z, y );
     }
@@ -60,13 +60,13 @@ function axes() {
 function animate() {
 	requestAnimationFrame( animate );
 
-    camera.rotation.x += .004;
-    camera.rotation.y += .004;
-    camera.rotation.z += .004;
+    // camera.rotation.x += .004;
+    //camera.rotation.y += .004;
+    // camera.rotation.z += .004;
 
 	renderer.render( scene, camera );
 }
 
 axes();
 renderer.render( scene, camera );
-//animate()
+// animate()

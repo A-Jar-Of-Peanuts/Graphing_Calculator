@@ -46,7 +46,7 @@ function graph(eq) {
     var py = 0;
     var x = 0;
     var y = 0;
-    var scale = 50;
+    var scale = 10;
     var pdev = 0;
     var curdev = 0;
     ctx.moveTo(0,0);
@@ -88,10 +88,10 @@ pemdas.set('-', 7);
 // parse equation
 function parse(eq, val) {
     var str = eq;
-    str = str.replace(/ /g,'')
-    str = str.replace('sin', '1s');
-    str = str.replace('cos', '1c');
-    str = str.replace('tan', '1t');
+    str = str.replaceAll(/ /g,'')
+    str = str.replaceAll('sin', '1s');
+    str = str.replaceAll('cos', '1c');
+    str = str.replaceAll('tan', '1t');
     var l = compute(str, val, 10);
 
     try {
