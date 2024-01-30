@@ -46,28 +46,28 @@ function graph(eq) {
     var y = 0;
     var scale = 5;
     ctx.moveTo(0,0);
-    for (var i = -width/2; i<=width/2; i+=1) {
+    for (var i = -width/2; i<=width/2; i+=.1) {
         x = i;
-        y = parse(eq, i);
+        y = parse(eq.value, i);
         if (isNaN(y) || !isFinite(y)) {
             console.log("NAN");
-            for(var j = i-1; j <= i-0.01; j+=0.01) {
-                var temp = parse(eq, j)
+            for(var j = i-1; j <= i-0.01; j+=.1) {
+                var temp = parse(eq.value, j)
                 ctx.lineTo(convertX(scale*j), convertY(scale*temp));
                 if (convertY(scale*temp) > height) {
                     break;
                 }
             }
-            ctx.moveTo(convertX(scale*i+0.01), convertY(scale*parse(eq, i+0.01)))
+            ctx.moveTo(convertX(scale*i+0.01), convertY(scale*parse(eq.value, i+0.01)))
             for(var j = i+0.01; j <= i+1; j+=0.01) {
-                var temp = parse(eq, j)
+                var temp = parse(eq.value, j)
                 ctx.lineTo(convertX(scale*j), convertY(scale*temp));
                 if (convertY(scale*temp) > height) {
                     break;
                 }
             }
             x = i+1;
-            y = parse(eq, i+1);
+            y = parse(eq.value, i+1);
         }
         //console.log(x + " " + y);
         if (y <= height/2) {
@@ -75,6 +75,7 @@ function graph(eq) {
         }
     }
     ctx.stroke();
+    console.log(parse('.1+2', 1));
 }
 
 const pemdas = new Map();
@@ -92,7 +93,7 @@ pemdas.set('-', 7);
 
 // parse equation
 function parse(eq, val) {
-    var str = eq.value;
+    var str = eq;
     str = str.replace('sin', '1s');
     str = str.replace('cos', '1c');
     str = str.replace('tan', '1t');
@@ -106,6 +107,7 @@ function parse(eq, val) {
     }
 }
 
+// handling parentheses and individual numbers
 function atomCalc(eq, val, lhs) {  
     if (!eq.length) {
         return [lhs, eq];
@@ -118,18 +120,18 @@ function atomCalc(eq, val, lhs) {
     }
 
     if (eq.charAt(0) == 'x') {
-        lhs = parseInt(val);
+        lhs = parseFloat(val);
         eq = eq.substring(1);
-    } else if (!isNaN(eq.charAt(0))) {
+    } else if (!isNaN(eq.charAt(0)) || eq.charAt(0) == '.') {
         var atom = "";
         cur = eq.charAt(0);
-        while(!isNaN(eq.charAt(0)) && eq.length) {
+        while((!isNaN(eq.charAt(0)) || eq.charAt(0) == '.') && eq.length) {
             atom += cur;
             eq = eq.substring(1);
             cur = eq.charAt(0);
         }
         console.log(atom);
-        lhs = parseInt(atom);
+        lhs = parseFloat(atom);
     } else if (eq.charAt(0) == '(') {
         var atom = "";
         eq = eq.substring(1);
@@ -149,7 +151,7 @@ function atomCalc(eq, val, lhs) {
         eq = eq.substring(1);
     } 
 
-    atomCalc(eq, val, lhs);
+    //atomCalc(eq, val, lhs);
     return [lhs, eq];
 }
 
@@ -180,16 +182,16 @@ function compute(eq, val, min_prec) {
 function singleOp(lhs, rhs, op) {
     switch(op) {
         case '+':
-            return parseInt(lhs) + parseInt(rhs);
+            return parseFloat(lhs) + parseFloat(rhs);
             break;
         case '-':
-            return parseInt(lhs) - parseInt(rhs);
+            return parseFloat(lhs) - parseFloat(rhs);
             break;
         case '*':
-            return parseInt(lhs) * parseInt(rhs);
+            return parseFloat(lhs) * parseFloat(rhs);
             break;
         case '/':
-            return parseInt(lhs) / parseInt(rhs);
+            return parseFloat(lhs) / parseFloat(rhs);
             break;
         case '^':
             console.log(rhs);
