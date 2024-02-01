@@ -1,4 +1,4 @@
-# 2D & 3D Graphing Calculator
+# 2D & 3D & 4D Graphing Calculator
 # Syntax
 parentheses: ()
 \
