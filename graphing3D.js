@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+
 document.getElementById("sub3D").addEventListener('click', submit3D)
 
 var width = 500;
@@ -64,29 +65,60 @@ function submit3D() {
 }
 
 // graph function
+// function graph(eq) {
+//     clear();
+//     var vertices = [];
+
+// //     for ( var i = -10; i<=10; i+=.05) {
+        
+// //         for (var j = -10; j<= 10; j+=.05) {
+// //             var x = i;
+// //             var y = j;
+// //             var z = parse(eq.value, x, y);
+// //             vertices.push( x, z, y );
+
+// // //             const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+// // //             const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+// // //             const mesh = new THREE.Mesh( geometry, material );
+// // // scene.add( mesh );
+
+// //         }
+// //     }
+
+// for ( var i = -50; i<=50; i+=1) {
+        
+//     for (var j = -50; j<= 50; j+=1) {
+//         var x = i;
+//         var y = j;
+//         var z = parse(eq.value, x, y);
+//         vertices.push( x, z, y );
+//     }
+// }
+
+//     var geometry = new THREE.BufferGeometry();
+//     geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+//     var material = new THREE.MeshBasicMaterial( { color: 0xFFA500 } );
+//     var points = new THREE.Points( geometry, material );
+//     scene.add( points );
+// }
+
 function graph(eq) {
     clear();
     var vertices = [];
 
-    for ( var i = -10; i<=10; i+=.01) {
-        
-        for (var j = -10; j<= 10; j+=.01) {
+    for ( var i = -10; i<=10; i+=.05) {
+
+        for (var j = -10; j<= 10; j+=.05) {
             var x = i;
             var y = j;
             var z = parse(eq.value, x, y);
             vertices.push( x, z, y );
-
-//             const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-//             const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
-//             const mesh = new THREE.Mesh( geometry, material );
-// scene.add( mesh );
-
         }
     }
 
     var geometry = new THREE.BufferGeometry();
     geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    var material = new THREE.MeshBasicMaterial( { color: 0xFFA500 } );
+    var material = new THREE.PointsMaterial( { color: 0x888888 } );
     var points = new THREE.Points( geometry, material );
     scene.add( points );
 }

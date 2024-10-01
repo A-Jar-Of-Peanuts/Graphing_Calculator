@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import ptree from "./CAS.js";
+
 
 document.getElementById("sub4D").addEventListener('click', submit4D)
 
