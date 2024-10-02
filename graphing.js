@@ -1,13 +1,13 @@
-var width = 500;
-var height = 500;
+// TODO: refactor code to make it more readable, also make it more interactive
+const width = 500;
+const height = 500;
 
 
-var c = document.getElementById("myCanvas");
+const c = document.getElementById("myCanvas");
 c.width = width;
 c.height = height;
 
-var ctx = c.getContext("2d");
-
+const ctx = c.getContext("2d");
 
 // axes
 ctx.beginPath();
@@ -36,26 +36,28 @@ function convertY(y) {
     return (-y + height/2);
 }
 function submit() {
-    var x = document.getElementById("eq");
-    graph(eq);
+    const x = document.getElementById("eq");
+    const equation = "y = " + x.value;
+    console.log(equation);
+    graph(equation);
 }
 
 // graph function
-function graph(eq) {
+// TODO: fix the graphing logic cuz it kinda sucks
+function graph(equation) {
     clear();
-    var px = 0;
-    var py = 0;
-    var x = 0;
-    var y = 0;
-    var scale = 10;
-    var pdev = 0;
-    var curdev = 0;
+    let x = 0;
+    let y = 0;
+    const scale = 10;
+    let pdev = 0;
+    let curdev = 0;
     ctx.moveTo(0,0);
+    const eqLambda = getEquation(equation);
     for (var i = -width/2; i<=width/2; i+=.001) {
         x = i;
-        y = parse(eq.value, i);
+        y = eqLambda({x: i});
         nextX = i+=0.01;
-        nextY = parse(eq.value, nextX);
+        nextY = eqLambda({x: nextX});
 
         curdev = (nextY - y)/(nextX- x);
         if (pdev * curdev >= 0) {
@@ -63,146 +65,11 @@ function graph(eq) {
                 ctx.lineTo(convertX(scale*x), convertY(scale*y));
             }
         } else {
-            ctx.moveTo(convertX(scale*(x+.1)), convertY(scale*(parse(eq.value, x+.1))));
+            ctx.moveTo(convertX(scale*(x+.1)), convertY(scale*(eqLambda({x: x+0.1}))));
         }
         pdev = curdev;
         px = x;
         py = y;
     }
     ctx.stroke();
-}
-
-const pemdas = new Map();
-
-pemdas.set('l', -3);
-pemdas.set('t', -2);
-pemdas.set('c', -1);
-pemdas.set('s', 0);
-pemdas.set('(', 1);
-pemdas.set(')', 2);
-pemdas.set('^', 3);
-pemdas.set('*', 4);
-pemdas.set('/', 5);
-pemdas.set('+', 6);
-pemdas.set('-', 7);
-
-// parse equation
-function parse(eq, val) {
-    var str = eq;
-    str = str.replaceAll(/ /g,'')
-    str = str.replaceAll('sin', '1s');
-    str = str.replaceAll('cos', '1c');
-    str = str.replaceAll('tan', '1t');
-    str = str.replaceAll('ln', '1l');
-    str = str.replaceAll('pi', 'p');
-    var l = compute(str, val, 10);
-
-    try {
-        return l[0];
-    } catch (e) {
-        return NaN;
-    }
-}
-
-// handling parentheses and individual numbers
-function atomCalc(eq, val, lhs) {  
-    if (!eq.length) {
-        return [lhs, eq];
-    }
-
-    cur = eq.charAt(0);  
-    if (!(cur != '+' && cur != '-' && cur != '*' && cur != '/' && cur != '^' && cur != 's'
-    && cur != 'c' && cur != 't' && cur != 'l')) {
-        return [lhs, eq];
-    }
-
-    if (eq.charAt(0) == 'x') {
-        lhs = parseFloat(val);
-        eq = eq.substring(1);
-    } else if (!isNaN(eq.charAt(0)) || eq.charAt(0) == '.') {
-        var atom = "";
-        cur = eq.charAt(0);
-        while((!isNaN(eq.charAt(0)) || eq.charAt(0) == '.') && eq.length) {
-            atom += cur;
-            eq = eq.substring(1);
-            cur = eq.charAt(0);
-        }
-        lhs = parseFloat(atom);
-    } else if (eq.charAt(0) == '(') {
-        eq = eq.substring(1);
-        var result = compute(eq, val, 10);
-        eq = result[1].substring(1);
-        lhs = result[0];
-    
-    } else if (eq.charAt(0) == 'e'){
-        lhs = Math.E;
-        eq = eq.substring(1);
-    }  else if (eq.charAt(0) == 'p') {
-        lhs = Math.PI;
-        eq = eq.substring(1);
-    }
-
-    //atomCalc(eq, val, lhs);
-    return [lhs, eq];
-}
-
-function compute(eq, val, min_prec) {
-    var ans = atomCalc(eq, val, 0);
-    var lhs = ans[0];
-    eq = ans[1];
-    var rhs = 0;
-
-    while(eq.length) {
-        var cur = eq.charAt(0);
-
-        if (cur != '+' && cur != '-' && cur != '*' && cur != '/' && cur != '^' && cur != 's'
-        && cur != 'c' && cur != 't' && cur != 'l') {
-            break;
-        }
-
-        if (pemdas.get(cur) > min_prec) {
-            break;
-        }
-
-        next_min_prec = pemdas.get(cur);
-
-        var result = compute(eq.substring(1), val, next_min_prec);
-        rhs = result[0];
-        eq = result[1];
-        lhs = singleOp(lhs, rhs, cur);
-    }
-
-    return [lhs, eq];
-}
-
-function singleOp(lhs, rhs, op) {
-    switch(op) {
-        case '+':
-            return parseFloat(lhs) + parseFloat(rhs);
-            break;
-        case '-':
-            return parseFloat(lhs) - parseFloat(rhs);
-            break;
-        case '*':
-            return parseFloat(lhs) * parseFloat(rhs);
-            break;
-        case '/':
-            return parseFloat(lhs) / parseFloat(rhs);
-            break;
-        case '^':
-            return Math.pow(lhs, rhs);
-            break;
-        case 's':
-            return Math.sin(rhs);
-            break;
-        case 'c':
-            return Math.cos(rhs);
-            break;
-        case 't':
-            return Math.tan(rhs);
-            break;
-        case 'l':
-            return Math.log(rhs);
-            break;
-    }
 }

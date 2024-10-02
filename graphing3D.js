@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import * as PARSER from './parser.js'
 
 
 document.getElementById("sub3D").addEventListener('click', submit3D)
